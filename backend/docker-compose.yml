@@ -14,51 +14,51 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/1.schema.sql
     
-  jobmanager:
-    image: flink:latest
-    container_name: jobmanager
-    ports:
-      - "8081:8081" # Flink UI
-    command: >
-      standalone-job --jars /jar/frauddetection-0.1.jar
-
-    environment:
-      FLINK_PROPERTIES: |
-        jobmanager.rpc.address: jobmanager
-        parallelism.default: 1
-    volumes:
-      - "./target:/jar" # Relative path to the JAR directory
-    depends_on:
-      - db
-
-  taskmanager:
-    image: flink:latest
-    container_name: taskmanager
-    depends_on:
-      - jobmanager
-    command: taskmanager
-    environment:
-      FLINK_PROPERTIES: |
-        jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 1
-    scale: 1
-
-  broker:
-    image: apache/kafka:latest
-    container_name: broker
-    environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_NUM_PARTITIONS: 1
+#  jobmanager:
+#    image: flink:latest
+#    container_name: jobmanager
+#    ports:
+#      - "8081:8081" # Flink UI
+#    command: >
+#      standalone-job --jars /jar/frauddetection-0.1.jar
+#
+#    environment:
+#      FLINK_PROPERTIES: |
+#        jobmanager.rpc.address: jobmanager
+#        parallelism.default: 1
+#    volumes:
+#      - "./target:/jar" # Relative path to the JAR directory
+#    depends_on:
+#      - db
+#
+#  taskmanager:
+#    image: flink:latest
+#    container_name: taskmanager
+#    depends_on:
+#      - jobmanager
+#    command: taskmanager
+#    environment:
+#      FLINK_PROPERTIES: |
+#        jobmanager.rpc.address: jobmanager
+#        taskmanager.numberOfTaskSlots: 1
+#    scale: 1
+#
+#  broker:
+#    image: apache/kafka:latest
+#    container_name: broker
+#    environment:
+#      KAFKA_NODE_ID: 1
+#      KAFKA_PROCESS_ROLES: broker,controller
+#      KAFKA_LISTENERS: PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+#      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+#      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+#      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+#      KAFKA_NUM_PARTITIONS: 1
 
 volumes:
   pgdata:
